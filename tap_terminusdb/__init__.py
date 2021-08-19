@@ -6,8 +6,13 @@ from singer import utils, metadata
 from singer.catalog import Catalog, CatalogEntry
 from singer.schema import Schema
 
+from terminusdb_client import WOQLClient
+from terminusdb_client.woqlschema import WOQLSchema
+from terminusdb_client.errors import DatabaseError
+from terminusdb_client.scripts.scripts import _connect, _load_settings
 
-REQUIRED_CONFIG_KEYS = ["start_date", "username", "password"]
+
+REQUIRED_CONFIG_KEYS = ["server", "database"]
 LOGGER = singer.get_logger()
 
 
@@ -15,19 +20,19 @@ def get_abs_path(path):
     return os.path.join(os.path.dirname(os.path.realpath(__file__)), path)
 
 
-def load_schemas():
-    """ Load schemas from schemas folder """
+def load_schemas(config):
+    """ Load schemas from database """
+    client, _ = _connect(config)
+    dbschema = WOQLSchema()
+    dbschema.from_db(client)
     schemas = {}
-    for filename in os.listdir(get_abs_path('schemas')):
-        path = get_abs_path('schemas') + '/' + filename
-        file_raw = filename.replace('.json', '')
-        with open(path) as file:
-            schemas[file_raw] = Schema.from_dict(json.load(file))
+    for item in dbschema.object:
+        schemas[item] = Schema.from_dict(dbschema.to_json_schema(item))
     return schemas
 
 
-def discover():
-    raw_schemas = load_schemas()
+def discover(config):
+    raw_schemas = load_schemas(config)
     streams = []
     for stream_id, schema in raw_schemas.items():
         # TODO: populate any metadata and stream's key properties here..
@@ -93,16 +98,22 @@ def main():
     # Parse command line arguments
     args = utils.parse_args(REQUIRED_CONFIG_KEYS)
 
+    # if args.config:
+    #     with open(args.config) as input:
+    #         config = _load_settings(args.config)
+    # else:
+    #     config = {}
+
     # If discover flag was passed, run discovery mode and dump output to stdout
     if args.discover:
-        catalog = discover()
+        catalog = discover(args.config)
         catalog.dump()
     # Otherwise run in sync mode
     else:
         if args.catalog:
             catalog = args.catalog
         else:
-            catalog = discover()
+            catalog = discover(config)
         sync(args.config, args.state, catalog)
 
 
