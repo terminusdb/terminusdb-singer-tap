@@ -35,7 +35,7 @@ def discover(config):
     raw_schemas = load_schemas(config)
     streams = []
     for stream_id, schema in raw_schemas.items():
-        # TODO: populate any metadata and stream's key properties here..
+        # populate any metadata and stream's key properties here..
         stream_metadata = []
         key_properties = ['id']
         streams.append(
@@ -65,7 +65,6 @@ def sync(config, state, catalog):
         if stream.tap_stream_id not in selected_streams:
             LOGGER.info(f"'{stream.tap_stream_id}' is not marked selected, skipping.")
             continue
-        # import pdb; pdb.set_trace()
         LOGGER.info("Syncing stream:" + stream.tap_stream_id)
 
         bookmark_column = stream.replication_key
@@ -77,13 +76,12 @@ def sync(config, state, catalog):
             key_properties=stream.key_properties,
         )
 
-        # TODO: delete and replace this inline function with your own data retrieval process:
-        # tap_data = lambda: [{"id": x, "name": "row${x}"} for x in range(1000)]
+        # data retrieval process:
         client, _ = _connect(config)
         tap_data = client.get_documents_by_type(stream.tap_stream_id)
         max_bookmark = None
         for row in tap_data:
-            # TODO: place type conversions or transformations here
+            # type conversions or transformations here
             new_row = {}
             for key, value in row.items():
                 if key[0] != '@':
