@@ -11,7 +11,3 @@ This tap:
   - [FIXME](http://example.com)
 - Outputs the schema for each resource
 - Incrementally pulls data based on the input state
-
----
-
-Copyright &copy; 2018 Stitch
