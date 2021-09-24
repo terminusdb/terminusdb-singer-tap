@@ -4,6 +4,7 @@ import os
 import singer
 from singer import utils
 from singer.catalog import Catalog, CatalogEntry
+from singer.schema import Schema
 from terminusdb_client.scripts.scripts import _connect
 from terminusdb_client.woqlschema import WOQLSchema
 
@@ -22,7 +23,7 @@ def load_schemas(config):
     dbschema.from_db(client)
     schemas = {}
     for item in dbschema.object:
-        schemas[item] = dbschema.to_json_schema(item)
+        schemas[item] = Schema.from_dict(dbschema.to_json_schema(item))
     return schemas
 
 
@@ -71,7 +72,7 @@ def sync(config, state, catalog):
 
         singer.write_schema(
             stream_name=stream.tap_stream_id,
-            schema=stream.schema,
+            schema=stream.schema.to_dict(),
             key_properties=stream.key_properties,
         )
 
