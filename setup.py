@@ -26,7 +26,7 @@ for old_str, new_str in replace_pairs.items():
 
 setup(
     name="tap-terminusdb",
-    version="0.1.0",
+    version="0.1.1",
     description="Singer.io tap for extracting data from TerminusDB",
     long_description=long_description,
     long_description_content_type="text/markdown",
