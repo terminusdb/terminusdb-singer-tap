@@ -1,18 +1,13 @@
 #!/usr/bin/env python3
 import os
-import json
+
 import singer
-from singer import utils, metadata
+from singer import utils
 from singer.catalog import Catalog, CatalogEntry
-from singer.schema import Schema
-
-from terminusdb_client import WOQLClient
+from terminusdb_client.scripts.scripts import _connect
 from terminusdb_client.woqlschema import WOQLSchema
-from terminusdb_client.errors import DatabaseError
-from terminusdb_client.scripts.scripts import _connect, _load_settings
 
-
-REQUIRED_CONFIG_KEYS = ["server", "database", "streams"]
+REQUIRED_CONFIG_KEYS = ["endpoint", "database", "streams"]
 LOGGER = singer.get_logger()
 
 
@@ -21,7 +16,7 @@ def get_abs_path(path):
 
 
 def load_schemas(config):
-    """ Load schemas from database """
+    """Load schemas from database"""
     client, _ = _connect(config)
     dbschema = WOQLSchema()
     dbschema.from_db(client)
@@ -37,7 +32,7 @@ def discover(config):
     for stream_id, schema in raw_schemas.items():
         # populate any metadata and stream's key properties here..
         stream_metadata = []
-        key_properties = ['id']
+        key_properties = ["id"]
         streams.append(
             CatalogEntry(
                 tap_stream_id=stream_id,
@@ -58,8 +53,10 @@ def discover(config):
 
 
 def sync(config, state, catalog):
-    """ Sync data from tap source """
+    """Sync data from tap source"""
     selected_streams = config["streams"]
+    if isinstance(selected_streams, str):
+        selected_streams = [selected_streams]
     # Loop over selected streams in catalog
     for stream in catalog.streams:
         if stream.tap_stream_id not in selected_streams:
@@ -68,7 +65,9 @@ def sync(config, state, catalog):
         LOGGER.info("Syncing stream:" + stream.tap_stream_id)
 
         bookmark_column = stream.replication_key
-        is_sorted = True  # TODO: indicate whether data is sorted ascending on bookmark value
+        is_sorted = (
+            True  # TODO: indicate whether data is sorted ascending on bookmark value
+        )
 
         singer.write_schema(
             stream_name=stream.tap_stream_id,
@@ -84,10 +83,10 @@ def sync(config, state, catalog):
             # type conversions or transformations here
             new_row = {}
             for key, value in row.items():
-                if key[0] != '@':
+                if key[0] != "@":
                     new_row[key] = value
-                elif key == '@id':
-                    new_row['id'] = value
+                elif key == "@id":
+                    new_row["id"] = value
             row = new_row
             # write one or more rows to the stream:
             singer.write_records(stream.tap_stream_id, [row])

@@ -1,0 +1,6 @@
+pytest>=3
+pytest-mock
+pytest-xdist
+docker-compose
+click
+terminusdb_client
