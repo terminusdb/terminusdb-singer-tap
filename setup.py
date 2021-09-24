@@ -37,7 +37,7 @@ setup(
     install_requires=[
         # NB: Pin these to a more specific version for tap reliability
         "singer-python>=5.12.2",
-        "terminusdb-client>=10.0.8",
+        "terminusdb-client>=10.0.10",
     ],
     entry_points="""
     [console_scripts]
