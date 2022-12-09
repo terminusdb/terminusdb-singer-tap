@@ -18,9 +18,7 @@ bcrypt==3.2.0
     # via paramiko
 black==21.9b0
     # via shed
-cached-property==1.5.2
-    # via docker-compose
-certifi==2021.5.30
+certifi==2022.12.7
     # via requests
 cffi==1.14.6
     # via
@@ -36,6 +34,8 @@ click==7.1.2
     #   pybetter
     #   pyemojify
     #   terminusdb-client
+com2ann==0.3.0
+    # via shed
 cryptography==3.4.8
     # via paramiko
 distro==1.6.0
@@ -56,11 +56,6 @@ idna==3.2
     # via requests
 imagesize==1.2.0
     # via sphinx
-importlib-metadata==4.8.1
-    # via
-    #   jsonschema
-    #   pluggy
-    #   pytest
 iniconfig==1.1.1
     # via pytest
 isort==5.9.3
@@ -139,6 +134,8 @@ pyyaml==5.4.1
     # via
     #   docker-compose
     #   libcst
+refactor==0.6.3
+    # via teyit
 regex==2021.8.28
     # via black
 requests==2.26.0
@@ -176,6 +173,8 @@ terminusdb-client==10.0.9
     # via -r requirements.in
 texttable==1.6.4
     # via docker-compose
+teyit==0.4.3
+    # via shed
 tokenize-rt==4.1.0
     # via pyupgrade
 toml==0.10.2
@@ -184,14 +183,11 @@ tomli==1.2.1
     # via black
 tqdm==4.62.3
     # via terminusdb-client
-typed-ast==1.4.3
-    # via black
 typeguard==2.12.1
     # via terminusdb-client
 typing-extensions==3.10.0.2
     # via
     #   black
-    #   importlib-metadata
     #   libcst
     #   typing-inspect
 typing-inspect==0.7.1
@@ -202,8 +198,6 @@ websocket-client==0.59.0
     # via
     #   docker
     #   docker-compose
-zipp==3.5.0
-    # via importlib-metadata
 
 # The following packages are considered to be unsafe in a requirements file:
 # setuptools
